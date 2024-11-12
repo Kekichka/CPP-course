@@ -2,25 +2,26 @@
 using namespace std;
 
 int main() {
-    const int N = 4; 
-    int matrix[N][N] = {
-        {1, 2, 3, 4},
-        {5, 6, 7, 8},
-        {9, 10, 11, 12},
-        {13, 14, 15, 16}
-    };
+    int i, j;
+    const int n = 4, m = 4;
+    int matr[n][m], sum = 0;
 
-    int sum = 0;
+    cout << "Input matrix:\n";
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < m; j++) {
+            cin >> matr[i][j];
+        }
+    }
 
-    for (int i = 1; i < N; ++i) {
-        for (int j = 0; j < N - i; ++j) {
-            if (matrix[i][j] > 0 && matrix[i][j] % 2 != 0) {  
-                sum += matrix[i][j];
+    for (i = 1; i < n; i++) {  
+        for (j = n - i; j < m; j++) {  
+            if (matr[i][j] > 0 && matr[i][j] % 2 != 0) { 
+                sum += matr[i][j];
             }
         }
     }
 
-    cout << "Sum: " << sum << endl;
+    cout << "Sum of positive odd numbers below the secondary diagonal: " << sum << endl;
 
     return 0;
 }
