@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-void swapRowsAndProduct(int matrix[10][10], int n) {
-    
+void swapRowsAndProduct(int** matrix, int n) {
     for (int j = 0; j < n; ++j) {
         swap(matrix[0][j], matrix[n - 1][j]);
     }
@@ -24,10 +23,13 @@ void swapRowsAndProduct(int matrix[10][10], int n) {
 
 int main() {
     int n;
-    int matrix[10][10];
-
     cout << "Enter the size of the matrix (n): ";
     cin >> n;
+
+    int** matrix = new int*[n];
+    for (int i = 0; i < n; ++i) {
+        matrix[i] = new int[n];
+    }
 
     cout << "Enter the elements of the matrix:" << endl;
     for (int i = 0; i < n; ++i) {
@@ -37,6 +39,11 @@ int main() {
     }
 
     swapRowsAndProduct(matrix, n);
+
+    for (int i = 0; i < n; ++i) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
 
     return 0;
 }
