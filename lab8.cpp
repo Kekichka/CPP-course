@@ -10,11 +10,21 @@ private:
     string name;
 
 public:
-    Topic(string code, string name)
-        : code(code), name(name) {}
+    Topic() : code(""), name("") {}
+
+    Topic(string code, string name) : code(code), name(name) {}
 
     string getCode() const { return code; }
     string getName() const { return name; }
+
+    bool operator==(const Topic& other) const {
+        return code == other.code && name == other.name;
+    }
+
+    friend ostream& operator<<(ostream& os, const Topic& topic) {
+        os << topic.name;
+        return os;
+    }
 };
 
 class Author {
@@ -25,6 +35,8 @@ private:
     int booksWritten;
 
 public:
+    Author() : firstName(""), lastName(""), booksWritten(0) {}
+
     Author(string firstName, string lastName, Topic bestTopic, int booksWritten)
         : firstName(firstName), lastName(lastName), bestTopic(bestTopic), booksWritten(booksWritten) {}
 
@@ -32,6 +44,25 @@ public:
     string getLastName() const { return lastName; }
     Topic getBestTopic() const { return bestTopic; }
     int getBooksWritten() const { return booksWritten; }
+
+    bool operator==(const Author& other) const {
+        return firstName == other.firstName && lastName == other.lastName;
+    }
+
+    Author& operator=(const Author& other) {
+        if (this != &other) { 
+            firstName = other.firstName;
+            lastName = other.lastName;
+            bestTopic = other.bestTopic;
+            booksWritten = other.booksWritten;
+        }
+        return *this;
+    }
+
+    friend ostream& operator<<(ostream& os, const Author& author) {
+        os << author.firstName << " " << author.lastName;
+        return os;
+    }
 
     bool matchesName(const string& first, const string& last) const {
         return firstName == first && lastName == last;
@@ -46,8 +77,18 @@ private:
     int authorCount;
 
 public:
+  
+    Book() : title(""), authorCount(0) {}
+
     Book(string title, Topic topic)
         : title(title), topic(topic), authorCount(0) {}
+
+    ~Book() {
+        for (int i = 0; i < authorCount; ++i) {
+            delete authors[i]; 
+        }
+    }
+
 
     string getTitle() const { return title; }
     string getTopicName() const { return topic.getName(); }
@@ -112,6 +153,11 @@ public:
             }
         }
         return count;
+    }
+
+    friend ostream& operator<<(ostream& os, const Book& book) {
+        os << book.title << " (" << book.topic << ")";
+        return os;
     }
 };
 
