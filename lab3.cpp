@@ -1,23 +1,20 @@
 #include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
+#include <string.h>
+#include <cctype>
+using namespace std;
 
 int main() {
-    std::string text = "Karen knew keeping the kitchen clean was key, but Kevin kept knocking things over, creating a mess. Meanwhile, the kids continued kicking a ball in the backyard, blissfully unaware of the chaos inside.";
-    std::vector<std::string> words;
-    std::stringstream ss(text);
-    std::string word;
+    char str[500] = "Karen knew keeping the kitchen clean was key, but Kevin kept knocking things over, creating a mess. Meanwhile, the kids continued kicking a ball in the backyard, blissfully unaware of the chaos inside.";
+    char* context = nullptr;
+    char* curWord = strtok_s(str, " ,.", &context);  
 
-    while (ss >> word) {
-        if (word[0] == 'k' || word[0] == 'K') {
-            words.push_back(word);
+    cout << "Words starting with 'k' or 'K':" << endl;
+
+    while (curWord) {
+        if (curWord[0] == 'k' || curWord[0] == 'K') {
+            cout << curWord << endl; 
         }
-    }
-
-    std::cout << "Words starting with k:" << std::endl;
-    for (const auto& w : words) {
-        std::cout << w << std::endl;
+        curWord = strtok_s(NULL, " .,", &context); 
     }
 
     return 0;
