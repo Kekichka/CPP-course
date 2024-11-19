@@ -1,0 +1,168 @@
+#include <iostream>
+#include <string>
+#include <stdexcept>
+using namespace std;
+
+class Topic {
+private:
+    string code;
+    string description;
+
+public:
+    Topic(string code, string description) : code(code), description(description) {}
+
+    Topic() : code(""), description("") {}
+
+    string getCode() const { return code; }
+    string getDescription() const { return description; }
+};
+
+class Author {
+private:
+    string firstName;
+    string lastName;
+    Topic topic;
+    int booksWritten;
+
+public:
+
+    Author() : firstName(""), lastName(""), topic(Topic("", "")), booksWritten(0) {}
+
+    Author(string firstName, string lastName, Topic topic, int booksWritten)
+        : firstName(firstName), lastName(lastName), topic(topic), booksWritten(booksWritten) {}
+
+    string getFirstName() const { return firstName; }
+    string getLastName() const { return lastName; }
+    int getBooksWritten() const { return booksWritten; }
+
+    friend ostream& operator<<(ostream& os, const Author& author) {
+        os << author.firstName << " " << author.lastName << " (" << author.booksWritten << " books)";
+        return os;
+    }
+};
+
+template <typename T>
+class AbstractArray {
+protected:
+    T* array;
+    int size;
+    int capacity;
+
+    void resize() {
+        capacity *= 2;
+        T* newArray = new T[capacity];
+        for (int i = 0; i < size; i++) {
+            newArray[i] = array[i];
+        }
+        delete[] array;
+        array = newArray;
+    }
+
+public:
+    AbstractArray(int initialCapacity = 5)
+        : size(0), capacity(initialCapacity) {
+        array = new T[capacity];
+        cout << "Base AbstractArray Constructor Called.\n";
+    }
+
+    virtual ~AbstractArray() {
+        delete[] array;
+        cout << "Base AbstractArray Destructor Called.\n";
+    }
+
+    virtual void add(const T& item) = 0;
+    virtual void remove(const string& name) = 0;
+    virtual void print() const = 0;
+};
+
+class AuthorArray : public AbstractArray<Author> {
+private:
+    string bookTitle;
+
+public:
+    AuthorArray(string bookTitle, int initialCapacity = 5)
+        : AbstractArray<Author>(initialCapacity), bookTitle(bookTitle) {
+        cout << "Derived AuthorArray Constructor Called.\n";
+    }
+
+    ~AuthorArray() {
+        cout << "Derived AuthorArray Destructor Called.\n";
+    }
+
+    void add(const Author& author) override {
+        if (size == capacity) {
+            resize();
+        }
+        array[size++] = author;
+    }
+
+    void remove(const string& fullName) override {
+        for (int i = 0; i < size; i++) {
+            if (array[i].getFirstName() + " " + array[i].getLastName() == fullName) {
+                for (int j = i; j < size - 1; j++) {
+                    array[j] = array[j + 1];
+                }
+                size--;
+                return;
+            }
+        }
+        cout << "Author not found: " << fullName << "\n";
+    }
+
+    void print() const override {
+        cout << "Book Title: " << bookTitle << "\n";
+        cout << "Authors:\n";
+        for (int i = 0; i < size; i++) {
+            cout << " - " << array[i] << "\n";
+        }
+    }
+
+    Author getTopAuthor() const {
+        if (size == 0) {
+            throw runtime_error("No authors in the list.");
+        }
+        Author topAuthor = array[0];
+        for (int i = 1; i < size; i++) {
+            if (array[i].getBooksWritten() > topAuthor.getBooksWritten()) {
+                topAuthor = array[i];
+            }
+        }
+        return topAuthor;
+    }
+};
+
+int main() {
+    Topic fiction("FIC", "Fiction");
+    Topic science("SCI", "Science");
+
+    Author author1("John", "Doe", fiction, 10);
+    Author author2("Jane", "Smith", science, 15);
+    Author author3("Emily", "White", fiction, 5);
+
+    AuthorArray authors("Amazing Stories");
+
+    authors.add(author1);
+    authors.add(author2);
+    authors.add(author3);
+
+    cout << "\nAuthors in the book:\n";
+    authors.print();
+
+    cout << "\nRemoving author 'Emily White'...\n";
+    authors.remove("Emily White");
+
+    cout << "\nAuthors after removal:\n";
+    authors.print();
+
+    try {
+        Author topAuthor = authors.getTopAuthor();
+        cout << "\nAuthor with the most books written: "
+            << topAuthor.getFirstName() << " " << topAuthor.getLastName()
+            << " (" << topAuthor.getBooksWritten() << " books)\n";
+    }
+    catch (const runtime_error& e) {
+        cout << e.what() << "\n";
+    }
+
+    return 0;
+}
